@@ -1,0 +1,79 @@
+"use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const examplePersistence_1 = __importDefault(require("../persistence/examplePersistence"));
+const baseController_1 = __importDefault(require("./baseController"));
+const middleware_1 = require("../middleware");
+const validator = __importStar(require("../validation/validators/exampleValidator"));
+class ExampleController extends baseController_1.default {
+    constructor() {
+        super(...arguments);
+        this.getOne = (ctx) => __awaiter(this, void 0, void 0, function* () {
+            try {
+                const request = validator.validateGetByIdRequest(ctx);
+                middleware_1.logger.info(JSON.stringify(request));
+                if (request.error) {
+                    return this.createErrorResponse(ctx, request.errorMessage || 'Unknown error reason', 400);
+                }
+                const persistence = new examplePersistence_1.default();
+                const data = yield persistence.getById(request.ids[0]);
+                return this.createValidResponse(ctx, data);
+            }
+            catch (error) {
+                ctx.body = {
+                    success: false,
+                    message: error.message
+                };
+            }
+        });
+        this.getMany = (ctx) => __awaiter(this, void 0, void 0, function* () {
+            try {
+                const request = validator.validateGetByIdsRequest(ctx);
+                if (request.error) {
+                    return this.createErrorResponse(ctx, request.errorMessage || 'Unknown error reason', 400);
+                }
+                const persistence = new examplePersistence_1.default();
+                const examples = yield persistence.getByIds(request.ids);
+                return this.createValidResponse(ctx, examples);
+            }
+            catch (error) {
+                ctx.body = {
+                    success: false,
+                    message: error.message
+                };
+            }
+        });
+    }
+}
+exports.default = ExampleController;
+//# sourceMappingURL=exampleController.js.map

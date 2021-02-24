@@ -1,0 +1,17 @@
+#!/usr/bin/env sh
+
+SCRIPT_PATH="$( cd "$(dirname "$0")" >/dev/null 2>&1 || exit ; pwd -P )"
+
+PACKAGE_VERSION=$(grep version "$SCRIPT_PATH"/../package.json \
+  | head -1 \
+  | awk -F: '{ print $2 }' \
+  | sed 's/[",]//g' \
+  | tr -d '[:space:]')
+
+PROJECT_NAME=$(grep name "$SCRIPT_PATH"/../package.json \
+  | head -1 \
+  | awk -F: '{ print $2 }' \
+  | sed 's/[",]//g' \
+  | tr -d '[:space:]')
+
+export PACKAGE_VERSION PROJECT_NAME

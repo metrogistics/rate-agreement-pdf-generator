@@ -1,0 +1,47 @@
+#!/usr/bin/env sh
+
+environment=local
+
+# Transform long options to short ones
+for arg in "$@"; do
+  echo "current arg = $1"
+  case "$arg" in
+    "--dev") set -- "$@" "-e"
+      set -- "$@" "development"
+      shift
+      ;;
+    "--prod"|"--production") set -- "$@" "-e"
+      set -- "$@" "production"
+      shift
+      ;;
+    "--staging") set -- "$@" "-e"
+      set -- "$@" "staging"
+      shift
+      ;;
+    *) set -- "$@" "$arg"
+      shift
+      ;;
+  esac
+done
+
+while getopts ":e" flag; do
+  case "${flag}" in
+    e) environment="$2"
+      shift
+      ;;
+    *) ;;
+  esac
+done
+
+echo "$environment"
+
+SCRIPT_PATH="$( cd "$(dirname "$0")" >/dev/null 2>&1 || exit ; pwd -P )"
+
+# shellcheck source=./variables
+. "$SCRIPT_PATH"/variables
+
+if [ "$environment" = local ]; then
+  docker build -t "$PROJECT_NAME:v$PACKAGE_VERSION" "$SCRIPT_PATH"/.
+else
+  docker build --build-arg NODE_ENV="$environment" -t "$PROJECT_NAME:v$PACKAGE_VERSION" "$SCRIPT_PATH"/../.
+fi

@@ -1,0 +1,20 @@
+{
+  "carrier_name": "William Billiter Test 2",
+  "carrier_address_1": "110 Rock Cliff Ct",
+  "carrier_address_2": "something or blank",
+  "carrier_city": "St. Louis",
+  "carrier_state": "MO",
+  "carrier_zip": "63123",
+  "carrier_phone": ["(618) 977-0958", "(618) 287-6080 (fax)"],
+  "origin": "ST. LOUIS, MO 63123",
+  "destination": "ST. LOUIS, MO 63123",
+  "load": "2005 INFINITI G35 COUPE",
+  "net_amount": 10,
+  "fee_amount": 15,
+  "units": "1 UNIT, 18 MILES ESTIMATED",
+  "target_pickup": "1 UNIT, 18 MILES ESTIMATED",
+  "payment_type_terms": "ACH 30 Days",
+  "customer_special_request": "Something about something.",
+  "signed_by": "Karen Irwin",
+  "signed_at": "2021-01-25T18:43:24.505Z"
+}

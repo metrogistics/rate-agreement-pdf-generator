@@ -1,0 +1,98 @@
+{
+  "name": "starter-api",
+  "version": "0.1.0",
+  "description": "Starter API",
+  "main": "server.js",
+  "scripts": {
+    "test": "yarn jest --colors",
+    "coverage": "yarn jest --collectCoverage --colors --collectCoverageFrom=src/**/*.{ts,js}",
+    "lint": "eslint --fix --format table --ext .js,.ts,.tsx src --cache",
+    "lint:clean": "eslint --report-unused-disable-directives --ext .js,.ts,.tsx src test",
+    "start": "./node_modules/typescript/bin/tsc && node server.js",
+    "watch": "nodemon"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:metrogistics/starter-api.git"
+  },
+  "author": "Team Name",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/metrogistics/typescript-starter/issues"
+  },
+  "engines": {
+    "node": "^14.15.4",
+    "npm": "^7.3.0"
+  },
+  "private": true,
+  "homepage": "https://github.com/metrogistics/typescript-starter#readme",
+  "nodemonConfig": {
+    "ignore": [
+      "**/*.test.ts",
+      "**/*.spec.ts",
+      ".git",
+      "node_modules"
+    ],
+    "watch": [
+      "src"
+    ],
+    "exec": "npm start",
+    "ext": "ts"
+  },
+  "dependencies": {
+    "@koa/cors": "^2.2.3",
+    "@slack/web-api": "^6.0.0",
+    "@slack/webhook": "^6.0.0",
+    "@types/uuid": "^8.3.0",
+    "ajv": "^7.0.3",
+    "aws-sdk": "^2.836.0",
+    "axios": "^0.21.1",
+    "chrome-aws-lambda": "^5.5.0",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "handlebars": "^4.7.6",
+    "html-pdf": "^2.2.0",
+    "install": "^0.13.0",
+    "koa": "^2.13.1",
+    "koa-bodyparser": "^4.3.0",
+    "koa-json": "^2.0.2",
+    "koa-router": "^10.0.0",
+    "lodash": "^4.17.20",
+    "moment": "^2.29.1",
+    "mysql": "^2.18.1",
+    "npm": "^7.5.2",
+    "pdf-lib": "^1.16.0",
+    "pg": "^8.5.1",
+    "puppeteer": "^7.1.0",
+    "uuid": "^8.3.2",
+    "winston": "^3.3.3"
+  },
+  "devDependencies": {
+    "@shopify/jest-koa-mocks": "^2.3.0",
+    "@types/chai": "^4.2.14",
+    "@types/koa": "^2.11.6",
+    "@types/koa-bodyparser": "^4.3.0",
+    "@types/koa-json": "^2.0.18",
+    "@types/koa-router": "^7.4.1",
+    "@types/koa__cors": "^3.0.2",
+    "@types/lodash": "^4.14.167",
+    "@types/mysql": "^2.15.17",
+    "@types/pg": "^7.14.7",
+    "@types/sinon": "^9.0.10",
+    "@typescript-eslint/eslint-plugin": "^4.13.0",
+    "@typescript-eslint/parser": "^4.13.0",
+    "babel-eslint": "^10.1.0",
+    "chai": "^4.2.0",
+    "eslint": "^7.17.0",
+    "eslint-plugin-lodash": "^7.1.0",
+    "eslint-plugin-node": "^11.1.0",
+    "jest": "^26.6.3",
+    "nock": "^13.0.5",
+    "nodemon": "^2.0.7",
+    "nyc": "^15.1.0",
+    "sinon": "^9.2.3",
+    "ts-jest": "^26.4.4",
+    "ts-node": "^9.1.1",
+    "typescript": "^4.1.3"
+  }
+}

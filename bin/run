@@ -1,0 +1,35 @@
+#!/usr/bin/env sh
+
+SCRIPT_PATH="$( cd "$(dirname "$0")" >/dev/null 2>&1 || exit ; pwd -P )"
+# shellcheck source=./variables
+. "$SCRIPT_PATH"/variables
+
+PORT=3000
+
+# Transform long options to short ones
+for arg in "$@"; do
+  shift
+  case "$arg" in
+    "--port") set -- "$@" "-p"
+     ;;
+    *) set -- "$@" "$arg"
+  esac
+done
+
+
+while getopts ":p" flag; do
+  case "${flag}" in
+    p) PORT="$2"
+      ;;
+    *) ;;
+  esac
+done
+
+docker run -d --rm \
+  -p "$PORT":3000 \
+  -v "$SCRIPT_PATH"/../:/app \
+  --name "$PROJECT_NAME" \
+  --env-file "$SCRIPT_PATH"/../.env \
+  --log-opt max-size=50m \
+  --log-opt max-file=3 \
+  "$PROJECT_NAME":v"$PACKAGE_VERSION"

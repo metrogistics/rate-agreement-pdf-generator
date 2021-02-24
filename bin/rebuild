@@ -1,0 +1,11 @@
+#!/usr/bin/env sh
+
+SCRIPT_PATH="$( cd "$(dirname "$0")" >/dev/null 2>&1 || exit ; pwd -P )"
+# shellcheck source=./variables
+. "$SCRIPT_PATH"/variables
+
+"$SCRIPT_PATH"/build "$@"
+
+docker stop "$PROJECT_NAME" && docker rm "$PROJECT_NAME"
+
+"$SCRIPT_PATH"/run "$@"
