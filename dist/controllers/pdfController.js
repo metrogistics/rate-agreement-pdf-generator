@@ -69,15 +69,15 @@ class PdfController extends baseController_1.default {
                 const page = yield browser.newPage();
                 // We set the page content as the generated html by handlebars
                 yield page.setContent(html);
-                // We use pdf function to generate the pdf in the same folder as this file.
-                yield page.pdf({ path: 'invoice.pdf', format: 'a4' });
                 //generating a filename
                 const fileName = this.generateFileName();
+                // We use pdf function to generate the pdf in the same folder as this file.
+                yield page.pdf({ path: fileName, format: 'a4' });
                 //uploading the file to s3
-                this.uploadFile(fileName, 'invoice.pdf');
+                this.uploadFile(fileName, fileName);
                 //deleting the temp file 
                 console.log(2);
-                fs_1.default.unlinkSync('invoice.pdf');
+                fs_1.default.unlinkSync(fileName);
                 yield browser.close();
                 //producing a kafka topic that the pdf has been generated
                 this.pdfReady(fileName, data.load);
