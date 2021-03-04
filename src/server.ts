@@ -8,6 +8,7 @@ import json from 'koa-json'
 import cors from '@koa/cors'
 import { v1 } from './routes'
 import { logger } from './middleware'
+import consume from './kafka/consumer'
 
 const app = new Koa()
 app.use(bodyParser())
@@ -31,6 +32,11 @@ const port = process.env.NODE_PORT || 3000
 
 app.listen(port, () => {
     logger.info(`Server started at http://localhost:${port}`)
+})
+
+consume().catch(error => {
+    console.log(error)
+    process.exit(1)
 })
 
 export {

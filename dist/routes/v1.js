@@ -11,6 +11,6 @@ const router = new koa_router_1.default({
 });
 router.get('/example/:id', controllers_1.firstController.getOne);
 router.get('/example', controllers_1.firstController.getMany);
-router.get('/pdf-example', controllers_1.pdfController.generatePdf);
+// router.get('/pdf-example/:load', pdfController.generatePdf)
 exports.default = router;
 //# sourceMappingURL=v1.js.map

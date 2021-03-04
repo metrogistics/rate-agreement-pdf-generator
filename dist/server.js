@@ -13,6 +13,7 @@ const koa_json_1 = __importDefault(require("koa-json"));
 const cors_1 = __importDefault(require("@koa/cors"));
 const routes_1 = require("./routes");
 const middleware_1 = require("./middleware");
+const consumer_1 = __importDefault(require("./kafka/consumer"));
 const app = new koa_1.default();
 exports.app = app;
 app.use(koa_bodyparser_1.default());
@@ -30,5 +31,9 @@ app.use(router.routes());
 const port = process.env.NODE_PORT || 3000;
 app.listen(port, () => {
     middleware_1.logger.info(`Server started at http://localhost:${port}`);
+});
+consumer_1.default().catch(error => {
+    console.log(error);
+    process.exit(1);
 });
 //# sourceMappingURL=server.js.map

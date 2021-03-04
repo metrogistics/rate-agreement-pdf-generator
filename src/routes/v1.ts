@@ -7,7 +7,7 @@ const router = new Router({
 
 router.get('/example/:id', firstController.getOne)
 router.get('/example', firstController.getMany)
-router.get('/pdf-example', pdfController.generatePdf)
+// router.get('/pdf-example/:load', pdfController.generatePdf)
 
 export default router
 

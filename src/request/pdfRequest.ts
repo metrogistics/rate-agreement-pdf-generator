@@ -1,6 +1,6 @@
 
 export default interface PdfRequest {
-    ids: number[]
+	load: any
     error: boolean
     errorMessage?: string
 }

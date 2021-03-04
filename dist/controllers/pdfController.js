@@ -1,23 +1,4 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -37,7 +18,9 @@ const util_1 = __importDefault(require("util"));
 const puppeteer_1 = __importDefault(require("puppeteer"));
 const handlebars_1 = __importDefault(require("handlebars"));
 const baseController_1 = __importDefault(require("./baseController"));
-const validator = __importStar(require("../validation/validators/pdfValidator"));
+const aws_sdk_1 = __importDefault(require("aws-sdk"));
+const uuid_1 = require("uuid");
+const kafka_1 = __importDefault(require("../kafka/kafka"));
 class PdfController extends baseController_1.default {
     constructor() {
         super(...arguments);
@@ -52,55 +35,104 @@ class PdfController extends baseController_1.default {
                 return Promise.reject("Could not load html template");
             }
         });
-        this.generatePdf = (ctx) => __awaiter(this, void 0, void 0, function* () {
-            const request = validator.validateGetByIdRequest(ctx);
-            console.log('hello world');
-            // return this.createValidResponse(ctx, [])
-            let data = {
-                carrier_name: "test carrier",
-                carrier_address_1: '123 fake st',
-                carrier_address_2: 'Suite 1',
-                carrier_city: 'St. Louis',
-                carrier_state: 'MO',
-                carrier_zip: '63123',
-                carrier_phone: '(618) 977-0958',
-                origin: 'AJ Test Dealership',
-                destination: 'AJ other dealership',
-                load: 123456,
-                net_amount: 900.00,
-                fee_amount: 50.00,
-                units: 2,
-                target_pickup: '2020-01-01',
-                payment_type_terms: 'ACH'
-            };
+        this.generatePdf = (record) => __awaiter(this, void 0, void 0, function* () {
+            // confluent data format
+            // {
+            //   "carrier_name": "test carrier",
+            //   "carrier_address_1": "123 fake st",
+            //   "carrier_address_2": "Suite 1",
+            //   "carrier_city": "St. Louis",
+            //   "carrier_state": "MO",
+            //   "carrier_zip": "63123",
+            //   "carrier_phone": "(618) 977-0958",
+            //   "origin": "AJ Test Dealership",
+            //   "destination": "AJ Other Dealership",
+            //   "load": 123456,
+            //   "net_amount": 900.00,
+            //   "fee_amount": 50.00,
+            //   "units": 2,
+            //   "target_pickup": "2021-01-01",
+            //   "payment_type_terms": "ACH"
+            // }
+            let data = JSON.parse(record.toString());
             this.getTemplateHtml().then((res) => __awaiter(this, void 0, void 0, function* () {
                 // Now we have the html code of our template in res object
                 // you can check by logging it on console
-                console.log(data);
                 console.log("Compiling the template with handlebars");
                 const template = handlebars_1.default.compile(res, { strict: true });
                 // we have compile our code with handlebars
                 const result = template(data);
-                console.log('2');
                 // We can use this to add dyamic data to the handlebars template at run time from database or API as per need.
                 const html = result;
                 // we are using headless mode
-                console.log('3');
                 const browser = yield puppeteer_1.default.launch();
-                console.log('4');
                 const page = yield browser.newPage();
                 // We set the page content as the generated html by handlebars
                 yield page.setContent(html);
-                console.log('6');
                 // We use pdf function to generate the pdf in the same folder as this file.
                 yield page.pdf({ path: 'invoice.pdf', format: 'a4' });
+                //generating a filename
+                const fileName = this.generateFileName();
+                //uploading the file to s3
+                this.uploadFile(fileName, 'invoice.pdf');
+                //deleting the temp file 
+                console.log(2);
+                fs_1.default.unlinkSync('invoice.pdf');
                 yield browser.close();
-                console.log("PDF Generated");
-                return this.createValidResponse(ctx, data);
+                //producing a kafka topic that the pdf has been generated
+                this.pdfReady(fileName, data.load);
             })).catch(err => {
-                return this.createErrorResponse(ctx, request.errorMessage || 'Unknown error reason', 400);
+                console.log(err);
             });
         });
+        this.pdfReady = (fileName, loadId) => __awaiter(this, void 0, void 0, function* () {
+            let producer = kafka_1.default.producer();
+            try {
+                let newData = {
+                    load_id: loadId,
+                    pdf_file_path: fileName,
+                };
+                yield producer.connect();
+                yield producer.send({
+                    topic: 'carhaul.rate-agreements.json.pdf-ready',
+                    messages: [
+                        {
+                            key: 'key1',
+                            value: JSON.stringify(newData).toString(),
+                            partition: 0
+                        }
+                    ],
+                });
+            }
+            catch (error) {
+                console.error('Producer Error: ', error);
+            }
+        });
+        this.uploadFile = (fileName, filePath) => __awaiter(this, void 0, void 0, function* () {
+            const s3 = new aws_sdk_1.default.S3({
+                accessKeyId: process.env.AWS_S3_KEY,
+                secretAccessKey: process.env.AWS_S3_SECRET,
+            });
+            //reading the file
+            const fileContent = fs_1.default.readFileSync(filePath);
+            // Setting up S3 upload parameters
+            const params = {
+                Bucket: 'rate-agreement-pdf',
+                Key: fileName,
+                Body: fileContent,
+                ACL: 'public-read'
+            };
+            //uploading the file to S3
+            s3.upload(params, {}, function (err, data) {
+                if (err) {
+                    console.log(err);
+                }
+                console.log('File uploaded successfully');
+            });
+        });
+        this.generateFileName = () => {
+            return uuid_1.v4() + '.pdf';
+        };
     }
 }
 exports.default = PdfController;

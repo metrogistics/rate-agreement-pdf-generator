@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const formattedResponse_1 = __importDefault(require("../network/base/formattedResponse"));
 class BaseController {
     createErrorResponse(ctx, message, code) {
+        console.log('error response');
         const response = new formattedResponse_1.default(code || 400);
         response.message = message;
         ctx.body = response.toJSON();
