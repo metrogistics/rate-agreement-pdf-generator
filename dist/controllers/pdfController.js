@@ -27,7 +27,7 @@ class PdfController extends baseController_1.default {
         this.getTemplateHtml = () => __awaiter(this, void 0, void 0, function* () {
             const readFile = util_1.default.promisify(fs_1.default.readFile);
             try {
-                const invoicePath = path_1.default.resolve("./src/templates/rateagreementesig.html");
+                const invoicePath = path_1.default.resolve("./src/templates/orderAccepted.html");
                 return yield readFile(invoicePath, 'utf8');
             }
             catch (err) {

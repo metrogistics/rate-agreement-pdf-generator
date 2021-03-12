@@ -19,7 +19,7 @@ export default class PdfController extends BaseController {
 		const readFile = utils.promisify(fs.readFile)
 
 		try {
-			const invoicePath = path.resolve("./src/templates/rateagreementesig.html");
+			const invoicePath = path.resolve("./src/templates/orderAccepted.html");
 			return await readFile(invoicePath, 'utf8');
 		} catch (err) {
             console.log(err);
