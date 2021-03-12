@@ -2462,7 +2462,7 @@
         "affectsGlobalScope": false
       },
       "../src/controllers/pdfcontroller.ts": {
-        "version": "5b7cead762c34222c1bf8b3e15e44304eab354b2a1c9e8cbc669c1372dfcc4bd",
+        "version": "a9281e65cff43e1c2eb91be5b00ccd37dcf1937301b93696f0f612825a1ab21c",
         "signature": "aeb52fa9a644c9698bcd3e28234abd7fcae56f3c4e277f84f4105c677c6cf7b5",
         "affectsGlobalScope": false
       },
