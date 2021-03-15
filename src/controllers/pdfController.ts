@@ -44,7 +44,9 @@ export default class PdfController extends BaseController {
 //   "fee_amount": 50.00,
 //   "units": 2,
 //   "target_pickup": "2021-01-01",
-//   "payment_type_terms": "ACH"
+//   "payment_type_terms": "ACH",
+//   "signed_by": "AJ Wise",
+//   "signed_at": "2021-01-01 00:00:00"
 // }
         let data = JSON.parse(record.toString())
     
